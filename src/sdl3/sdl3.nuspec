@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+		<!-- Required -->
+    <id>OwlDomain.SDL3.Native</id>
+		<version>$version$</version>
+    <authors>OwlDomain</authors>
+    <description>Native libraries for SDL3.</description>
+
+		<!-- Licensing -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+
+		<!-- Details -->
+    <projectUrl>https://github.com/Owl-Domain/sdl-nuget/</projectUrl>
+		<repository type="git" branch="$branch$" commit="$commit$" url="https://github.com/Owl-Domain/sdl-nuget.git" />
+    <tags>sdl sdl3 native</tags>
+		<readme>readme.md</readme>
+    <icon>icon.png</icon>
+  </metadata>
+
+	<files>
+		<!-- Meta -->
+		<file src="./readme.md" target="/" />
+		<file src="../icon.png" target="/" />
+
+		<!-- Native libraries -->
+		<file src="./linux-x64/libSDL3.so" target="/runtimes/linux-x64/native/libSDL3.so" />
+	</files>
+</package>
