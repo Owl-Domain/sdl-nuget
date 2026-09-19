@@ -1,0 +1,185 @@
+name: Build SDL3
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build_sdl3.yaml'
+
+permissions:
+  contents: write
+
+jobs:
+  version-check:
+    runs-on: ubuntu-slim
+
+    outputs:
+      current-version: ${{ steps.version-info.outputs.current-version }}
+      latest-version: ${{ steps.version-info.outputs.latest-version }}
+      needs-update: ${{ steps.update-check.outputs.needs-update }}
+
+    steps:
+      - name: Get current version info from repository.
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            src/sdl3/version
+
+      - name: Get latest version info from SDL repository.
+        id: version-info
+        run: |
+          LATEST_VERSION=$(curl --no-progress-meter --write-out "%{redirect_url}" https://github.com/libsdl-org/SDL/releases/latest | sed -E "s/.*\/releases\/tag\/([^#]*)#?.*/\1/")
+          CURRENT_VERSION=$(cat src/sdl3/version || true)
+
+          echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if update is required.
+        id: update-check
+        run:
+          if [[ "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
+            echo "needs-update=false" >> $GITHUB_OUTPUT
+            echo "No updates found. No further work necessary." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "needs-update=true" >> $GITHUB_OUTPUT
+            echo "An update from '$CURRENT_VERSION' to '$LATEST_VERSION' is needed." >> $GITHUB_STEP_SUMMARY
+          fi
+
+
+
+  build:
+    needs: version-check
+    if: needs.version-check.outputs.needs-update == 'true'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Source for OSes: https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+          # Source for RIDs: https://learn.microsoft.com/en-us/dotnet/core/rid-catalog#known-rids
+          - rid: linux-x64
+            os: ubuntu-latest
+            library-name: libSDL3.so
+            compiler: gcc
+            generator: Ninja
+
+          - rid: linux-arm64
+            os: ubuntu-24.04-arm
+            library-name: libSDL3.so
+            compiler: gcc
+            generator: Ninja
+
+          - rid: win-x64
+            os: windows-latest
+            library-name: SDL3.dll
+            compiler: cl
+            generator: "Visual Studio 18 2026"
+
+          - rid: win-arm64
+            os: windows-11-vs2026-arm
+            library-name: SDL3.dll
+            compiler: cl
+            generator: "Visual Studio 18 2026"
+
+    defaults:
+      run:
+        shell: bash
+
+    name: Build (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install unique dependencies (Linux only).
+        if: startsWith(matrix.os, 'ubuntu')
+        run: >
+          sudo apt-get install build-essential git make
+          pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev
+          libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev
+          libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev
+          libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev
+          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev
+          libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
+
+      - name: Checkout SDL3 source repository.
+        uses: actions/checkout@v7
+        with:
+          repository: libsdl-org/SDL.git
+          ref: ${{ needs.version-check.outputs.latest-version }}
+          path: external/sdl3
+
+      - name: Configure (CMake).
+        working-directory: external/sdl3
+        run: >
+          cmake -S . -B build -G "${{ matrix.generator }}"
+          -DCMAKE_C_COMPILER=${{ matrix.compiler }}
+          -DCMAKE_BUILD_TYPE=Release
+          -DSDL_SHARED=ON
+          -DSDL_STATIC=OFF
+          -DSDL_TEST_LIBRARY=OFF
+          -DSDL_TESTS=OFF
+          -DSDL_INSTALL=OFF
+
+      - name: Build (CMake).
+        working-directory: external/sdl3
+        run: |
+          cmake --build build --config Release --parallel
+          cd build
+          [ -d "Release" ] && cp Release/* . || true
+
+      - name: Prepare build artifact.
+        run: |
+          mkdir -p artifact
+          cp "external/sdl3/build/${{ matrix.library-name }}" "artifact/${{ matrix.rid }}_${{ matrix.library-name }}"
+
+      - name: Upload built library file as an artifact.
+        uses: actions/upload-artifact@v7
+        with:
+          path: "artifact/${{ matrix.rid }}_${{ matrix.library-name }}"
+          archive: false
+
+
+
+  commit:
+    if: needs.version-check.outputs.needs-update
+    runs-on: ubuntu-slim
+    needs:
+      - version-check
+      - build
+
+    steps:
+      - name: Checkout repository.
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: src/sdl3
+
+      - name: Download built library file artifacts.
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Ensure correct directory structure.
+        working-directory: artifacts
+        run: |
+          for FILE in *; do
+            PARTS=(${FILE//_/ })
+            mkdir -p ../src/sdl3/${PARTS[0]}
+            cp "$FILE" ../src/sdl3/${PARTS[0]}/${PARTS[1]}
+          done
+          git add ../src/sdl3
+
+      - name: Update current version file.
+        run: |
+          echo "${{ needs.version-check.outputs.latest-version }}" > src/sdl3/version
+          git add src/sdl3/version
+
+      - name: Setup GitHub Actions bot credentials.
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push the update.
+        run: |
+          [[ $(git diff-index -m HEAD --) ]] || { echo "No updates found. No push necessary." >> $GITHUB_STEP_SUMMARY; exit 0; }
+          git commit -m "Updated SDL3 from ${{ needs.version-check.outputs.current-version }} to ${{ needs.version-check.outputs.latest-version }}."
+          git pull --rebase
+          git push
