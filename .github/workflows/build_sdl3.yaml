@@ -186,6 +186,7 @@ jobs:
           git pull --rebase
           git push
 
+
   nuget:
     runs-on: ubuntu-latest
     needs:
@@ -201,6 +202,9 @@ jobs:
         with:
           sparse-checkout: src/sdl3
 
+      - name: Setup Mono.
+        run: sudo apt install mono-devel
+
       - name: Setup NuGet.
         uses: nuget/setup-nuget@v3
 
@@ -212,6 +216,12 @@ jobs:
             -OutputDirectory ../packages/ \
             -Verbosity detailed \
             -Properties "version=$VERSION;branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD)"
+
+      - name: Upload NuGet package as an artifact.
+        uses: actions/upload-artifact@v7
+        with:
+          path: "src/packages/*"
+          archive: false
 
       - name: NuGet login.
         id: login
