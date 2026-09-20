@@ -6,9 +6,6 @@ on:
     paths:
       - '.github/workflows/build_sdl3.yaml'
 
-permissions:
-  contents: write
-
 jobs:
   version-check:
     runs-on: ubuntu-slim
@@ -49,10 +46,11 @@ jobs:
           fi
 
 
-
   build:
     needs: version-check
     if: needs.version-check.outputs.needs-update == 'true'
+    permissions:
+      contents: write
 
     strategy:
       fail-fast: false
@@ -140,13 +138,15 @@ jobs:
           archive: false
 
 
-
   commit:
     if: needs.version-check.outputs.needs-update
     runs-on: ubuntu-slim
     needs:
       - version-check
       - build
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository.
@@ -183,6 +183,46 @@ jobs:
       - name: Commit and push the update.
         run: |
           [[ $(git diff-index -m HEAD --) ]] || { echo "No updates found. No push necessary." >> $GITHUB_STEP_SUMMARY; exit 0; }
-          git commit -m "Updated SDL3 from ${{ needs.version-check.outputs.current-version }} to ${{ needs.version-check.outputs.latest-version }}."
+          git commit -m "Updated SDL3 from '${{ needs.version-check.outputs.current-version }}' to '${{ needs.version-check.outputs.latest-version }}'."
           git pull --rebase
           git push
+
+  nuget:
+    runs-on: ubuntu-slim
+    needs:
+      - version-check
+      - commit
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout the repository.
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: src/sdl3
+
+      - name: Setup NuGet.
+        uses: nuget/setup-nuget@v3
+
+      - name: Build the NuGet package.
+        working-directory: src/sdl3
+        run: |
+          VERSION=$(echo "${{ needs.version-check.outputs.latest-version }}" | sed "s/^release-//")
+          nuget pack sdl3.nuspec \
+            -OutputDirectory ../packages/ \
+            -Verbosity detailed \
+            -Properties "version=$VERSION;branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD)"
+
+      - name: NuGet login.
+        id: login
+        uses: nuget/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: NuGet push.
+        run: |
+          nuget push src/packages/* \
+          -SkipDuplicate \
+          -Source https://api.nuget.org/v3/index.json \
+          -ApiKey ${{ steps.login.outputs.NUGET_API_KEY }}

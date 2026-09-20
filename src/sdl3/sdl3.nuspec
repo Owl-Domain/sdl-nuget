@@ -26,5 +26,8 @@
 
 		<!-- Native libraries -->
 		<file src="./linux-x64/libSDL3.so" target="/runtimes/linux-x64/native/libSDL3.so" />
+		<file src="./linux-arm64/libSDL3.so" target="/runtimes/linux-arm64/native/libSDL3.so" />
+		<file src="./win-x64/SDL3.dll" target="/runtimes/win-x64/native/SDL3.dll" />
+		<file src="./win-arm64/SDL3.dll" target="/runtimes/win-arm64/native/SDL3.dll" />
 	</files>
 </package>
