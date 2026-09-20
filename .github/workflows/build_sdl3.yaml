@@ -36,7 +36,7 @@ jobs:
 
       - name: Check if update is required.
         id: update-check
-        run:
+        run: |
           if [[ "$CURRENT_VERSION" == "$LATEST_VERSION" ]]; then
             echo "needs-update=false" >> $GITHUB_OUTPUT
             echo "No updates found. No further work necessary." >> $GITHUB_STEP_SUMMARY
