@@ -28,11 +28,14 @@ jobs:
       - name: Get latest version info from SDL repository.
         id: version-info
         run: |
-          LATEST_VERSION=$(curl --no-progress-meter --write-out "%{redirect_url}" https://github.com/libsdl-org/SDL/releases/latest | sed -E "s/.*\/releases\/tag\/([^#]*)#?.*/\1/")
           CURRENT_VERSION=$(cat src/sdl3/version || true)
+          LATEST_VERSION=$(curl --no-progress-meter --write-out "%{redirect_url}" https://github.com/libsdl-org/SDL/releases/latest | sed -E "s/.*\/releases\/tag\/([^#]*)#?.*/\1/")
 
-          echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
+          echo "Current version: '$CURRENT_VERSION'"
+          echo "Latest version: '$LATEST_VERSION'"
 
       - name: Check if update is required.
         id: update-check
