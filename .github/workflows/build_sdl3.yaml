@@ -200,7 +200,11 @@ jobs:
       - name: Checkout the repository.
         uses: actions/checkout@v7
         with:
+          ref: main
           sparse-checkout: src/sdl3
+
+      - name: Print NuGet package files.
+        run: tree src/sdl3
 
       - name: Setup Mono.
         run: sudo apt install mono-devel
