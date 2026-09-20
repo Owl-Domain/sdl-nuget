@@ -8,7 +8,7 @@ on:
 
 jobs:
   version-check:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
 
     outputs:
       current-version: ${{ steps.version-info.outputs.current-version }}
@@ -140,7 +140,7 @@ jobs:
 
   commit:
     if: needs.version-check.outputs.needs-update
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     needs:
       - version-check
       - build
@@ -188,7 +188,7 @@ jobs:
           git push
 
   nuget:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     needs:
       - version-check
       - commit
