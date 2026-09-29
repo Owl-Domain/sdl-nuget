@@ -2,9 +2,9 @@ name: Publish SDL3
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - src/sdl3
+  #push:
+    #paths:
+      #- src/sdl3
 
 jobs:
   publish:

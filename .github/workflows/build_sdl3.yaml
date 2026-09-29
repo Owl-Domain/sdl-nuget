@@ -89,6 +89,18 @@ jobs:
             compiler: cl
             generator: "Visual Studio 18 2026"
 
+          - rid: osx-x64
+            os: macos-26-intel
+            library-name: libSDL3.dylib
+            compiler: gcc
+            generator: Xcode
+
+          - rid: osx-arm64
+            os: macos-latest
+            library-name: libSDL3.dylib
+            compiler: gcc
+            generator: Xcode
+
     defaults:
       run:
         shell: bash
