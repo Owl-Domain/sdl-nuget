@@ -1,10 +1,17 @@
 name: Build SDL3
 
 on:
-  workflow_dispatch:
   push:
     paths:
       - '.github/workflows/build_sdl3.yaml'
+
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Whether to force the rebuild.
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   version-check:
@@ -48,7 +55,7 @@ jobs:
 
   build:
     needs: version-check
-    if: needs.version-check.outputs.needs-update == 'true'
+    if: (needs.version-check.outputs.needs-update == 'true') || inputs.force
     permissions:
       contents: write
 
