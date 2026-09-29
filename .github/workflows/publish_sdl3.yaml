@@ -1,10 +1,17 @@
 name: Publish SDL3
 
 on:
+  push:
+    paths:
+      - src/sdl3
+
   workflow_dispatch:
-  #push:
-    #paths:
-      #- src/sdl3
+    inputs:
+      suffix:
+        description: Version suffix (separator prefix required).
+        type: string
+        required: false
+        default: ''
 
 jobs:
   publish:
@@ -32,7 +39,7 @@ jobs:
       - name: Build the NuGet package.
         working-directory: src/sdl3
         run: |
-          VERSION=$(cat version | sed "s/^release-//")
+          VERSION=$(cat version | sed "s/^release-//")${{ inputs.suffix }}
           nuget pack sdl3.nuspec \
             -OutputDirectory ../packages/ \
             -Verbosity detailed \
