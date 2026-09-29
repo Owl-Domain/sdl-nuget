@@ -6,7 +6,9 @@ This package contains the native binaries for
 Currently supported platforms:
 - Linux *(x64 and Arm64)*.
 - Windows *(x64 and Arm64)*.
-
+- MacOS *(x64 and Arm64)*.
+  - The binaries are included, however they remain untested, as such your
+    mileage may vary depending on whether Apple is gonna be annoying.
 
 ## Development
 
