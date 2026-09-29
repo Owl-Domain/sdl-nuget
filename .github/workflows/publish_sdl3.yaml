@@ -3,7 +3,7 @@ name: Publish SDL3
 on:
   push:
     paths:
-      - src/sdl3
+      - src/sdl3/**
 
   workflow_dispatch:
     inputs:
