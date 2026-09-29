@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: Whether to force the rebuild.
+        description: Force the build?
         required: false
         default: false
         type: boolean
@@ -111,7 +111,7 @@ jobs:
       - name: Install unique dependencies (Linux only).
         if: startsWith(matrix.os, 'ubuntu')
         run: >
-          sudo apt-get install build-essential git make
+          sudo apt-get update && sudo apt-get install build-essential git make
           pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev
           libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev
           libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev
