@@ -124,6 +124,12 @@ jobs:
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev
           libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
 
+      - name: Checkout SDL3 binary.
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: |
+            src/sdl3/${{ matrix.rid }}
+
       - name: Checkout SDL3 source repository.
         uses: actions/checkout@v7
         with:
