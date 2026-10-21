@@ -28,13 +28,13 @@ jobs:
       needs-update: ${{ steps.update-check.outputs.needs-update }}
 
     steps:
-      - name: Get current version info from repository.
+      - name: Get current version info from the repository.
         uses: actions/checkout@v7
         with:
           sparse-checkout: |
             src/sdl3_ttf/version
 
-      - name: Get latest version info from SDL_ttf repository.
+      - name: Get latest version info from the SDL_ttf repository.
         id: version-info
         run: |
           CURRENT_VERSION=$(cat src/sdl3_ttf/version || true)

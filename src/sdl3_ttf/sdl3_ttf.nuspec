@@ -5,7 +5,7 @@
     <id>OwlDomain.SDL3.TTF.Native</id>
 		<version>$version$</version>
     <authors>OwlDomain</authors>
-    <description>Native libraries for SDL3_ttf.</description>
+    <description>Native binaries for SDL3_ttf.</description>
 
 		<!-- Licensing -->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

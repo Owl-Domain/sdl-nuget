@@ -5,7 +5,7 @@
     <id>OwlDomain.SDL3.Image.Native</id>
 		<version>$version$</version>
     <authors>OwlDomain</authors>
-    <description>Native libraries for SDL3_Image.</description>
+    <description>Native binaries for SDL3_Image.</description>
 
 		<!-- Licensing -->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
