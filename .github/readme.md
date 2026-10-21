@@ -17,3 +17,14 @@ Currently supported platforms:
 - MacOS *(x64 and Arm64)*.
   - The binaries are included, however they remain untested, as such your
     mileage may vary depending on whether Apple is gonna be annoying.
+
+
+
+### SDL3_Image
+
+<a title="A link to the OwlDomain.SDL3.Image.Native NuGet package." href="https://www.nuget.org/packages/OwlDomain.SDL3.Image.Native"><img alt="Status badge for the OwlDomain.SDL3.Image.Native NuGet package." src="https://img.shields.io/nuget/v/OwlDomain.SDL3.Image.Native?label=OwlDomain.SDL3.Image.Native"></a>
+
+Currently supported platforms:
+- Linux *(x64 and Arm64)*.
+- Windows *(x64 and Arm64)*.
+
