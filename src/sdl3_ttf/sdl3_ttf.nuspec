@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+		<!-- Required -->
+    <id>OwlDomain.SDL3.TTF.Native</id>
+		<version>$version$</version>
+    <authors>OwlDomain</authors>
+    <description>Native libraries for SDL3_ttf.</description>
+
+		<!-- Licensing -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+
+		<!-- Details -->
+    <projectUrl>https://github.com/Owl-Domain/sdl-nuget/</projectUrl>
+		<repository type="git" branch="$branch$" commit="$commit$" url="https://github.com/Owl-Domain/sdl-nuget.git" />
+    <tags>sdl sdl3 sdl_ttf sdl3_ttf native</tags>
+		<readme>readme.md</readme>
+    <icon>icon.png</icon>
+  </metadata>
+
+	<files>
+		<!-- Meta -->
+		<file src="./readme.md" target="/" />
+		<file src="../icon.png" target="/" />
+
+		<!-- Native libraries -->
+		<file src="./linux-x64/libSDL3_ttf.so" target="/runtimes/linux-x64/native/libSDL3_ttf.so" />
+		<file src="./linux-arm64/libSDL3_ttf.so" target="/runtimes/linux-arm64/native/libSDL3_ttf.so" />
+		<file src="./win-x64/SDL3_ttf.dll" target="/runtimes/win-x64/native/SDL3_ttf.dll" />
+		<file src="./win-arm64/SDL3_ttf.dll" target="/runtimes/win-arm64/native/SDL3_ttf.dll" />
+	</files>
+</package>
