@@ -207,7 +207,7 @@ jobs:
       - name: Upload built library file as an artifact.
         uses: actions/upload-artifact@v7
         with:
-          path: "artifact/${{ matrix.rid }}_${{ matrix.library-name }}"
+          path: "artifact/${{ matrix.rid }}__${{ matrix.library-name }}"
           archive: false
 
 
@@ -236,7 +236,7 @@ jobs:
         working-directory: artifacts
         run: |
           for FILE in *; do
-            PARTS=(${FILE//_/ })
+            PARTS=(${FILE//__/ })
             mkdir -p ../src/sdl3_image/${PARTS[0]}
             cp "$FILE" ../src/sdl3_image/${PARTS[0]}/${PARTS[1]}
           done
