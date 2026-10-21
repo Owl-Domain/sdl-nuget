@@ -202,7 +202,7 @@ jobs:
       - name: Prepare build artifact.
         run: |
           mkdir -p artifact
-          cp "external/sdl3_image/build/${{ matrix.library-name }}" "artifact/${{ matrix.rid }}_${{ matrix.library-name }}"
+          cp "external/sdl3_image/build/${{ matrix.library-name }}" "artifact/${{ matrix.rid }}__${{ matrix.library-name }}"
 
       - name: Upload built library file as an artifact.
         uses: actions/upload-artifact@v7
