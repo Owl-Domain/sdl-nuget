@@ -7,8 +7,7 @@ on:
       - '.github/workflows/build_sdl3_image.yaml'
 
   schedule:
-    # Hopefully 2 hours after the SDL3 build is long enough.
-    - cron: 0 2 * * 0
+    - cron: 0 0 * * 0
 
   workflow_dispatch:
     inputs:
@@ -25,6 +24,7 @@ jobs:
     outputs:
       current-version: ${{ steps.version-info.outputs.current-version }}
       latest-version: ${{ steps.version-info.outputs.latest-version }}
+      sdl-version: ${{ steps.version-info.outputs.sdl-version }}
       needs-update: ${{ steps.update-check.outputs.needs-update }}
 
     steps:
@@ -39,12 +39,15 @@ jobs:
         run: |
           CURRENT_VERSION=$(cat src/sdl3_image/version || true)
           LATEST_VERSION=$(curl --no-progress-meter --write-out "%{redirect_url}" https://github.com/libsdl-org/SDL_image/releases/latest | sed -E "s/.*\/releases\/tag\/([^#]*)#?.*/\1/")
+          SDL_VERSION=$(curl --no-progress-meter --write-out "%{redirect_url}" https://github.com/libsdl-org/SDL/releases/latest | sed -E "s/.*\/releases\/tag\/([^#]*)#?.*/\1/")
 
           echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "sdl-version=$SDL_VERSION" >> $GITHUB_OUTPUT
 
           echo "Current version: '$CURRENT_VERSION'"
           echo "Latest version: '$LATEST_VERSION'"
+          echo "SDL version: '$SDL_VERSION'"
 
       - name: Check if update is required.
         id: update-check
@@ -55,6 +58,7 @@ jobs:
           else
             echo "needs-update=true" >> $GITHUB_OUTPUT
             echo "An update from '${{ steps.version-info.outputs.current-version }}' to '${{ steps.version-info.outputs.latest-version }}' is needed." >> $GITHUB_STEP_SUMMARY
+            echo "Building against SDL '${{ steps.version-info.outputs.sdl-version }}'." >> $GITHUB_STEP_SUMMARY
           fi
 
 
@@ -124,13 +128,30 @@ jobs:
           libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev
           libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
 
-      - name: Checkout SDL3 binary.
+      - name: Checkout SDL3 source repository.
         uses: actions/checkout@v7
         with:
-          sparse-checkout: |
-            src/sdl3/${{ matrix.rid }}
+          repository: libsdl-org/SDL.git
+          ref: ${{ needs.version-check.outputs.sdl-version }}
+          path: external/sdl3
 
-      - name: Checkout SDL3 source repository.
+      - name: Configure SDL3 (CMake).
+        working-directory: external/sdl3
+        run: >
+          cmake -S . -B build -G "${{ matrix.generator }}"
+          -DCMAKE_C_COMPILER=${{ matrix.compiler }}
+          -DCMAKE_BUILD_TYPE=Release
+          -DSDL_SHARED=ON
+          -DSDL_STATIC=OFF
+          -DSDL_TEST_LIBRARY=OFF
+          -DSDL_TESTS=OFF
+          -DSDL_INSTALL=OFF
+
+      - name: Build SDL3 (CMake).
+        working-directory: external/sdl3
+        run: cmake --build build --config Release --parallel
+
+      - name: Checkout SDL3_Image source repository.
         uses: actions/checkout@v7
         with:
           repository: libsdl-org/SDL_image.git
@@ -138,13 +159,13 @@ jobs:
           path: external/sdl3_image
           submodules: recursive
 
-      - name: Configure (CMake).
+      - name: Configure SDL3_Image (CMake).
         working-directory: external/sdl3_image
         run: >
           cmake -S . -B build -G "${{ matrix.generator }}"
           -DCMAKE_C_COMPILER=${{ matrix.compiler }}
           -DCMAKE_BUILD_TYPE=Release
-          -DSDL3_DIR="../../src/sdl3/${{ matrix.rid }}"
+          -DSDL3_DIR="../sdl3/build"
           -DBUILD_SHARED_LIBS=ON
           -DSDLIMAGE_SAMPLES=OFF
           -DSDLIMAGE_INSTALL=OFF
@@ -170,7 +191,7 @@ jobs:
           -DSDLIMAGE_XPM=ON
           -DSDLIMAGE_XV=ON
 
-      - name: Build (CMake).
+      - name: Build SDL3_Image (CMake).
         working-directory: external/sdl3_image
         run: |
           cmake --build build --config Release --parallel
