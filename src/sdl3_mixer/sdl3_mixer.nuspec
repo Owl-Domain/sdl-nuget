@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+		<!-- Required -->
+    <id>OwlDomain.SDL3.Mixer.Native</id>
+		<version>$version$</version>
+    <authors>OwlDomain</authors>
+    <description>Native binaries for SDL3_mixer.</description>
+
+		<!-- Licensing -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+
+		<!-- Details -->
+    <projectUrl>https://github.com/Owl-Domain/sdl-nuget/</projectUrl>
+		<repository type="git" branch="$branch$" commit="$commit$" url="https://github.com/Owl-Domain/sdl-nuget.git" />
+    <tags>sdl sdl3 sdl_mixer sdl3_mixer native</tags>
+		<readme>readme.md</readme>
+    <icon>icon.png</icon>
+  </metadata>
+
+	<files>
+		<!-- Meta -->
+		<file src="./readme.md" target="/" />
+		<file src="../icon.png" target="/" />
+
+		<!-- Native libraries -->
+		<file src="./linux-x64/libSDL3_mixer.so" target="/runtimes/linux-x64/native/libSDL3_mixer.so" />
+		<file src="./win-x64/SDL3_mixer.dll" target="/runtimes/win-x64/native/SDL3_mixer.dll" />
+		<file src="./win-arm64/SDL3_mixer.dll" target="/runtimes/win-arm64/native/SDL3_mixer.dll" />
+	</files>
+</package>

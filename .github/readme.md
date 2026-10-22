@@ -7,6 +7,13 @@ binaries as NuGet packages.
 
 ## Current packages
 
+Currently all of the packages support at least:
+- Linux *(x64)*
+- Windows *(x64 and Arm64)*
+
+Support for other platforms can be contributed.
+
+
 ### SDL3
 
 <a title="A link to the OwlDomain.SDL3.Native NuGet package." href="https://www.nuget.org/packages/OwlDomain.SDL3.Native"><img alt="Status badge for the OwlDomain.SDL3.Native NuGet package." src="https://img.shields.io/nuget/v/OwlDomain.SDL3.Native?label=OwlDomain.SDL3.Native"></a>
@@ -34,4 +41,13 @@ Currently supported platforms:
 
 Currently supported platforms:
 - Linux *(x64 and Arm64)*.
+- Windows *(x64 and Arm64)*.
+
+
+### SDL3_mixer
+
+<a title="A link to the OwlDomain.SDL3.Mixer.Native NuGet package." href="https://www.nuget.org/packages/OwlDomain.SDL3.Mixer.Native"><img alt="Status badge for the OwlDomain.SDL3.Mixer.Native NuGet package." src="https://img.shields.io/nuget/v/OwlDomain.SDL3.Mixer.Native?label=OwlDomain.SDL3.Mixer.Native"></a>
+
+Currently supported platforms:
+- Linux *(x64)*.
 - Windows *(x64 and Arm64)*.
