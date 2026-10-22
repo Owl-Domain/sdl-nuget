@@ -177,7 +177,7 @@ jobs:
           -DSDLMIXER_FLAC=ON
           -DSDLMIXER_GME=ON
           -DSDLMIXER_MOD=ON
-          -DSDLMIXER_MP3=ON
+          -DSDLMIXER_MP3_MPG123=ON
           -DSDLMIXER_MIDI=ON
           -DSDLMIXER_OPUS=ON
           -DSDLMIXER_WAVPACK=ON
