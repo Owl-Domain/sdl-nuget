@@ -1,0 +1,67 @@
+name: Publish SDL3_mixer
+
+on:
+  push:
+    branches: main
+    paths:
+      - src/sdl3_mixer/**
+
+  workflow_dispatch:
+    inputs:
+      suffix:
+        description: Version suffix (separator prefix required).
+        type: string
+        required: false
+        default: ''
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout the repository.
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          sparse-checkout: src/sdl3_mixer
+
+      - name: Print NuGet package files.
+        run: tree src/sdl3_mixer
+
+      - name: Setup Mono.
+        run: sudo apt install mono-devel
+
+      - name: Setup NuGet.
+        uses: nuget/setup-nuget@v3
+
+      - name: Build the NuGet package.
+        working-directory: src/sdl3_mixer
+        run: |
+          VERSION=$(cat version | sed "s/^release-//")${{ inputs.suffix }}
+          nuget pack sdl3_mixer.nuspec \
+            -OutputDirectory ../packages/ \
+            -Verbosity detailed \
+            -Properties "version=$VERSION;branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD)"
+
+      - name: Upload NuGet package as an artifact.
+        uses: actions/upload-artifact@v7
+        with:
+          path: src/packages/*
+          archive: false
+
+      - name: NuGet login.
+        id: login
+        uses: nuget/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: NuGet push.
+        run: |
+          nuget push src/packages/* \
+          -SkipDuplicate \
+          -Source https://api.nuget.org/v3/index.json \
+          -ApiKey ${{ steps.login.outputs.NUGET_API_KEY }}
+          echo "New package version should be available at https://www.nuget.org/packages/OwlDomain.SDL3.Image.Native (once indexed)."
