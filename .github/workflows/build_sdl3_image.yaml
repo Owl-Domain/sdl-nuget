@@ -1,4 +1,4 @@
-name: Build SDL3_Image
+name: Build SDL3_image
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
           sparse-checkout: |
             src/sdl3_image/version
 
-      - name: Get latest version info from the SDL_Image repository.
+      - name: Get latest version info from the SDL_image repository.
         id: version-info
         run: |
           CURRENT_VERSION=$(cat src/sdl3_image/version || true)
@@ -152,7 +152,7 @@ jobs:
         working-directory: external/sdl3
         run: cmake --build build --config Release --parallel
 
-      - name: Checkout SDL3_Image source repository.
+      - name: Checkout SDL3_image source repository.
         uses: actions/checkout@v7
         with:
           repository: libsdl-org/SDL_image.git
@@ -160,7 +160,7 @@ jobs:
           path: external/sdl3_image
           submodules: recursive
 
-      - name: Configure SDL3_Image (CMake).
+      - name: Configure SDL3_image (CMake).
         working-directory: external/sdl3_image
         run: >
           cmake -S . -B build -G "${{ matrix.generator }}"
@@ -192,7 +192,7 @@ jobs:
           -DSDLIMAGE_XPM=ON
           -DSDLIMAGE_XV=ON
 
-      - name: Build SDL3_Image (CMake).
+      - name: Build SDL3_image (CMake).
         working-directory: external/sdl3_image
         run: |
           cmake --build build --config Release --parallel
@@ -255,6 +255,6 @@ jobs:
       - name: Commit and push the update.
         run: |
           [[ $(git diff-index -m HEAD --) ]] || { echo "No updates found. No push necessary." >> $GITHUB_STEP_SUMMARY; exit 0; }
-          git commit -m "Updated SDL3_Image from '${{ needs.version-check.outputs.current-version }}' to '${{ needs.version-check.outputs.latest-version }}'."
+          git commit -m "Updated SDL3_image from '${{ needs.version-check.outputs.current-version }}' to '${{ needs.version-check.outputs.latest-version }}'."
           git pull --rebase
           git push

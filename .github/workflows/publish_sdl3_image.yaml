@@ -1,4 +1,4 @@
-name: Publish SDL3_Image
+name: Publish SDL3_image
 
 on:
   push:

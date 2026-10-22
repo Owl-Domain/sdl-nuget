@@ -1,7 +1,7 @@
 # SDL3.Mixer.Native
 
 This package contains the native binaries for
-[SDL3_Image](https://wiki.libsdl.org/SDL3_mixer/FrontPage).
+[SDL3_mixer](https://wiki.libsdl.org/SDL3_mixer/FrontPage).
 
 Currently supported platforms:
 - Linux *(x64)*.

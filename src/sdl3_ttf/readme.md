@@ -1,7 +1,7 @@
 # SDL3.TTF.Native
 
 This package contains the native binaries for
-[SDL3_Image](https://wiki.libsdl.org/SDL3_ttf/FrontPage).
+[SDL3_ttf](https://wiki.libsdl.org/SDL3_ttf/FrontPage).
 
 Currently supported platforms:
 - Linux *(x64 and Arm64)*.

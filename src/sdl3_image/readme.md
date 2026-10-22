@@ -1,7 +1,7 @@
 # SDL3.Image.Native
 
 This package contains the native binaries for
-[SDL3_Image](https://wiki.libsdl.org/SDL3_image/FrontPage).
+[SDL3_image](https://wiki.libsdl.org/SDL3_image/FrontPage).
 
 Currently supported platforms:
 - Linux *(x64 and Arm64)*.
