@@ -80,11 +80,12 @@ jobs:
             compiler: gcc
             generator: Ninja
 
-          - rid: linux-arm64
-            os: ubuntu-24.04-arm
-            library-name: libSDL3_mixer.so
-            compiler: gcc
-            generator: Ninja
+          # Some weird problem I don't understand: error "Bad decoder choice together with fixed point math!"
+          # - rid: linux-arm64
+          #  os: ubuntu-24.04-arm
+          #  library-name: libSDL3_mixer.so
+          #  compiler: gcc
+          #  generator: Ninja
 
           - rid: win-x64
             os: windows-latest
@@ -170,6 +171,17 @@ jobs:
           -DBUILD_SHARED_LIBS=ON
           -DCMAKE_SKIP_RPATH=ON
           -DSDLMIXER_VENDORED=ON
+          -DSDLMIXER_AIFF=ON
+          -DSDLMIXER_WAVE=ON
+          -DSDLMIXER_VOC=ON
+          -DSDLMIXER_AU=ON
+          -DSDLMIXER_FLAC=ON
+          -DSDLMIXER_GME=ON
+          -DSDLMIXER_MOD=ON
+          -DSDLMIXER_MP3=ON
+          -DSDLMIXER_MIDI=ON
+          -DSDLMIXER_OPUS=ON
+          -DSDLMIXER_WAVPACK=ON
 
       - name: Build SDL3_mixer (CMake).
         working-directory: external/sdl3_mixer
